@@ -7,43 +7,27 @@ int main()
 {
     int row, col, Battery;
     
+    clock_t start_t, end_t;
+
     cin >> row >> col >> Battery;
 
+    start_t = clock();
     graph g(row, col);
 
+    node *begin;
 
-    queue<node *> queue;
-    queue.push(g.map[g.row_begin][g.col_begin]);
-    g.map[g.row_begin][g.col_begin]->set_travel(true);
-    while (!queue.empty())
-    {
-        node *root;
-        root = queue.front();
-
-        for (int i = 0; i < 4; i++)
-        {
-            node *next = root->get_direction(i);
-            if (next != nullptr && next->get_travel() != true)
-            {
-                queue.push(next);
-                next->set_parent(root);
-                next->set_height(root->get_height() + 1);
-                root->set_child(i, next);
-                next->set_travel(true);
-            }  
-        }
-            
-        queue.pop();
-    }
-
+    begin = g.MST();
 
 
     int count = 0;
     int battery = Battery;
     g.reset_travel();
-        cout << g.map[2][0]->get_child(up)->get_travel() << endl;
+
+  
+
+  //      cout << g.map[2][0]->get_child(up)->get_travel() << endl;
  //   g.preorder(g.map[g.row_begin][g.col_begin]);
-    g.traverse(g.map[g.row_begin][g.col_begin], battery, Battery, count);
+    g.traverse(begin, battery, Battery, count);
     cout << count << endl;
 
     cout << endl;
@@ -61,13 +45,11 @@ int main()
         cout << endl;
     }*/
 
-    for (int i = 0; i < row; i++)
-    {
-        for (int j = 0; j < col; j++)
-            delete g.map[i][j];
-        delete g.map[i];
-    }
-    delete g.map;
+
     
+    end_t = clock();
+
+    cout << (double)(end_t - start_t) / CLOCKS_PER_SEC << endl;
+
     return 0;
 }

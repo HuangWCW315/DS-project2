@@ -13,9 +13,12 @@ using namespace std;
 #define up 2
 #define down 3
 
+
+
 class node
 {
     friend class graph;
+    friend class BST;
 
     private:
     int row, col;
@@ -23,22 +26,24 @@ class node
     int state;
     bool travel;
     node *parent;
-    node *child[4];
-    node *direction[4];//, *left, *right, *up, *down;
+//    node *child[4];
+    node *direction[4];
+    node *Left, *Right;
+    node *order;
 
     public:
     node(){}
     node(int row, int col, int state):row(row), col(col), height(1), state(state), travel(false), 
-                                        parent(nullptr)/*, left(nullptr), right(nullptr), 
+                                        parent(nullptr), Left(nullptr), Right(nullptr)/*, 
                                         up(nullptr), down(nullptr)*/
                                         {
                                             for (int i = 0; i < 4; i++)
                                             {    
                                                 direction[i] = nullptr;
-                                                child[i] = nullptr;
+                            //                    child[i] = nullptr;
                                             }
                                         }
-    void set_state(char state){this->state = state;}
+/*    void set_state(char state){this->state = state;}
     void set_travel(bool travel){this->travel = travel;}
     void set_parent(node *parent){this->parent=parent;}
     void set_direction(int index, node* direction){this->direction[index] = direction;}
@@ -51,37 +56,96 @@ class node
     bool get_travel(){return this->travel;}
     node *get_parent(){return this->parent;}
     node *get_direction(int index){return this->direction[index];}
-    node *get_child(int index){return this->child[index];}
-    void print_data(ofstream& file){file << this->row << ' ' << this->col << '\n';}
+    node *get_child(int index){return this->child[index];}*/
+    void print_data(ofstream& file){file << this->row << ' ' << this->col << " " << this->height << '\n';}    
+    void print_data(int battery, ofstream& file){file << this->row << ' ' << this->col << ' ' << battery<<  '\n';} 
+    void print_data(){cout << this->row << ' ' << this->col << ' ' << this->height << '\n';}
+    void print_data(int battery){cout << this->row << ' ' << this->col << ' ' << this->height <<' '<< battery << '\n';}
+    
+    int get_state(){return this->state;}
     bool check_battery(int battery)
     {
         if (this->height - 1 <= battery)
             return true;
         else return false;
     }
+    bool check_battery_short(int battery_use, int const battery_max)
+    {
+        if ((battery_max - battery_use) + this->height <= (battery_max / 2))
+            return true;
+        else return false;
+    }
+
+    node *get_order(){return this->order;}
+    
+    int get_height(){return this->height;}
 };
+
+
+
+class BST
+{
+    private:
+    node *root;
+    node* insert(node *root, node* target)
+    {
+    if (root == nullptr)
+    {
+      //      cout << "here\n";
+        return target;
+    }
+    else if (root->height == target->height)
+    { 
+        root->Left = insert(root->Left, target);
+    }
+    else if (root->height > target->height)
+    { 
+        root->Left = insert(root->Left, target);
+    }
+    else if (root->height < target->height)
+    {
+        root->Right = insert(root->Right, target);
+    }
+    return root;
+    }
+    public:
+
+    BST(node *root):root(root){}
+    void insert(node* target)
+    {
+        if (root == target) return;
+        root = insert(root, target);
+    }
+};
+
 
 class graph
 {
     private:
     int row_max, col_max;
-    int element_number;
     int row_begin, col_begin;
     bool all_visit(node *root);
-
+    node *sort(node *root, BST &BST);
+    void sort(node *root, node **arr, int &counter);
+    node *root;
     public:
     
 
+    int element_number;
     node ***map;
     graph(int row, int col);
     ~graph();
     void link(int row, int col);
-    void traverse(node *root, int &battery, const int battery_max, int &counter);
+    void traverse(node *root, int &battery, const int battery_max, int &counter, ofstream& file_out);
     void print(int row, int col);
     void reset_travel();
     bool all_visit();
     void preorder(node *root);
     node *MST();
+    void shortest_path(node *root, const int battery_max, int &counter, node *highest,ofstream& file_out);
+    void sort(node **arr);
+    node* BFS();
 };
+
 
 #endif

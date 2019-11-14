@@ -25,7 +25,7 @@ void graph::reset_travel()
             map[i][j]->travel = false;
 }
 //*******************************************************************************************//
-graph::graph(int row, int col)
+graph::graph(int row, int col, ifstream& file)
 {
         element_number = 0;
         row_max = row;
@@ -51,20 +51,19 @@ graph::graph(int row, int col)
             }
         }
         */
-        cin.get();
+        char ch[1000];
         for (int i = 0; i < row; i++)
         {    
             map[i] = new node*[col];
+            file >> ch;
             for (int j = 0; j < col; j++)
             {
                 int state;
-                char ch;
-                cin.get(ch);
-                if (ch == '0')
+                if (ch[j] == '0')
                     state = 0;
-                else if (ch == '1')
+                else if (ch[j] == '1')
                     state = 1;
-                else if (ch == 'R')
+                else if (ch[j] == 'R')
                     state = 2;
                 map[i][j] = new node(i, j, state);
                 
@@ -74,7 +73,6 @@ graph::graph(int row, int col)
                     col_begin = j;
                 }
             }
-            cin.get();
         }
 
     for (int i = 0; i < row; i++)
@@ -261,7 +259,7 @@ graph::~graph()
 }
 
 //***********************************************************************************************//
-
+/*
 
 void graph::shortest_path(node *root, const int battery_max, int &counter, node *highest, ofstream& file_out)
 {
@@ -370,7 +368,7 @@ void graph::shortest_path(node *root, const int battery_max, int &counter, node 
  //   root->print_data(file_out);
 
 
-}
+}*/
 
 //*************************************************************************************************//
 /*
@@ -423,9 +421,7 @@ node * graph::BFS()
     queue.push(map[row_begin][col_begin]);
     map[row_begin][col_begin]->travel = true;
     node *pt = map[row_begin][col_begin];
-
     node *root= map[row_begin][col_begin];
-
     reset_travel();
 
     while (!queue.empty())
@@ -448,6 +444,106 @@ node * graph::BFS()
             
         queue.pop();
     }
+
+    map[row_begin][col_begin]->order = nullptr;
     return root;
 
+}
+
+
+//**************************************************************************************************************//
+void graph::shortest_path(node *root, const int battery_max, int &counter, node *highest, ofstream& file_out)
+{
+    int element = element_number;
+    stack<node *> path;
+    stack<node *> s1;
+    stack<node *> s2;
+    node* index = highest;
+    counter--;
+    reset_travel();
+    while (element > 0)
+    {   
+        root->print_data(file_out);     // print root
+        while (index->travel)        // find highest
+        {
+            index = index->order;
+        }
+        node *pt = index;
+ //       index->print_data();
+
+        while (pt != nullptr)        // root to index mark
+        {
+            if (!pt->travel)
+            {
+                element--;
+                pt->travel = true;
+            }
+            
+            pt = pt->parent;
+        }
+
+        bool can_go = true;
+        node *now = index;
+        int step = 0;
+        while (can_go)        // travel as far as possible
+        {
+            
+            can_go = false;
+           if (!now->travel)       // mark
+            {
+                element--;
+                now->travel = true;
+            }
+
+            for (int i = 0; i < 4; i++)     // find way to go
+            {
+                if (now->direction[i] != nullptr && now->direction[i] != now->parent && now->direction[i]->travel != true)
+                {
+                    node *next = now->direction[i];
+                    if (next->check_battery_short(step + 1, index->height, battery_max))
+                    {   
+         /*               cout << "height : " << index->height + step + 1 << endl;
+                        next->print_data();*/
+
+                        now = next;
+                        path.push(next);
+                        can_go = true;
+                        step++;
+                    }
+                }
+
+            }
+        }
+        while (!path.empty())        // go to far
+        {
+            s1.push(path.top());
+            path.pop();
+        }
+        pt = index;
+        while (pt != nullptr)        // go to root
+        {
+            s1.push(pt);
+            pt = pt->parent;
+        }
+        s1.pop();                   // pop root
+        while (!s1.empty())        // out go
+        {
+            s2.push(s1.top());
+            s1.top()->print_data(file_out);
+            s1.pop();
+            counter++;
+        }
+        s2.pop();                   // pop far
+        while (!s2.empty())        // out back
+        {
+            s2.top()->print_data(file_out);
+            s2.pop();
+            counter++;
+        }
+        
+        counter++;
+    }
+
+        root->print_data(file_out);     // print root
+        counter++;
 }

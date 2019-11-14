@@ -57,7 +57,7 @@ class node
     node *get_parent(){return this->parent;}
     node *get_direction(int index){return this->direction[index];}
     node *get_child(int index){return this->child[index];}*/
-    void print_data(ofstream& file){file << this->row << ' ' << this->col << " " << this->height << '\n';}    
+    void print_data(ofstream& file){file << this->row << ' ' << this->col  << '\n';}    
     void print_data(int battery, ofstream& file){file << this->row << ' ' << this->col << ' ' << battery<<  '\n';} 
     void print_data(){cout << this->row << ' ' << this->col << ' ' << this->height << '\n';}
     void print_data(int battery){cout << this->row << ' ' << this->col << ' ' << this->height <<' '<< battery << '\n';}
@@ -69,9 +69,9 @@ class node
             return true;
         else return false;
     }
-    bool check_battery_short(int battery_use, int const battery_max)
+    bool check_battery_short(int step, int height, int const battery_max)
     {
-        if ((battery_max - battery_use) + this->height <= (battery_max / 2))
+        if ((step + height) <= (battery_max / 2))
             return true;
         else return false;
     }
@@ -133,7 +133,7 @@ class graph
 
     int element_number;
     node ***map;
-    graph(int row, int col);
+    graph(int row, int col, ifstream& file);
     ~graph();
     void link(int row, int col);
     void traverse(node *root, int &battery, const int battery_max, int &counter, ofstream& file_out);

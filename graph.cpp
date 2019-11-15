@@ -156,9 +156,9 @@ node * graph::BFS()
 //**************************************************************************************************************//
 void graph::shortest_path(node *root, const int battery_max, int &counter, node *highest, ofstream& file_out)
 {
-    int element = element_number;
+    int element = element_number + 1;
     stack path;
-    stack s1;
+    queue s1;
     stack s2;
     node* index = highest;
     counter--;
@@ -171,10 +171,10 @@ void graph::shortest_path(node *root, const int battery_max, int &counter, node 
             index = index->order;
         }
         node *pt = index;
- //       index->print_data();
 
         while (pt != nullptr)        // root to index mark
         {
+            path.push(pt);
             if (!pt->travel)
             {
                 element--;
@@ -184,9 +184,18 @@ void graph::shortest_path(node *root, const int battery_max, int &counter, node 
             pt = pt->parent;
         }
 
+        path.pop();         // pop root
+        while (!path.empty())       // print root to index
+        {
+            path.top()->print_data(file_out);
+            path.pop();
+            counter++;
+        }
+
         bool can_go = true;
         node *now = index;
         int step = 0;
+
         while (can_go)        // travel as far as possible
         {
             
@@ -202,13 +211,10 @@ void graph::shortest_path(node *root, const int battery_max, int &counter, node 
                 if (now->direction[i] != nullptr && now->direction[i] != now->parent && now->direction[i]->travel != true)
                 {
                     node *next = now->direction[i];
-                    if (next->check_battery_short(step + 1, index->height, battery_max))
+                    if (next->check_battery_short(next->height, step + 1, index->height, battery_max))
                     {   
-         /*               cout << "height : " << index->height + step + 1 << endl;
-                        next->print_data();*/
-
                         now = next;
-                        path.push(next);
+                        s1.push(next);
                         can_go = true;
                         step++;
                     }
@@ -216,33 +222,35 @@ void graph::shortest_path(node *root, const int battery_max, int &counter, node 
 
             }
         }
-        while (!path.empty())        // go to far
+
+        while (!s1.empty())            // index to far
         {
-            s1.push(path.top());
-            path.pop();
-        }
-        pt = index;
-        while (pt != nullptr)        // go to root
-        {
-            s1.push(pt);
-            pt = pt->parent;
-        }
-        s1.pop();                   // pop root
-        while (!s1.empty())        // out go
-        {
-            s2.push(s1.top());
-            s1.top()->print_data(file_out);
+            s1.front()->print_data(file_out);
             s1.pop();
             counter++;
         }
-        s2.pop();                   // pop far
-        while (!s2.empty())        // out back
+    
+
+        while (now != root)      // far to root
         {
-            s2.top()->print_data(file_out);
-            s2.pop();
+            s1.push(now);
+            now = now->parent;
+        }
+
+        s1.pop();
+        while (!s1.empty())           // far to root
+        {
+            if (!s1.front()->travel)       // mark
+            {
+                element--;
+                s1.front()->travel = true;
+            }
+            s1.front()->print_data(file_out);
+            s1.pop();
             counter++;
         }
         
+
         counter++;
     }
 

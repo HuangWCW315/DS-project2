@@ -40,9 +40,9 @@ class node
 
     void print_data(ofstream& file){file << this->row << ' ' << this->col  << '\n';}
     
-    bool check_battery_short(int step, int height, int const battery_max)
+    bool check_battery_short(int height_now, int step, int height_index, int const battery_max)
     {
-        if ((step + height) <= (battery_max / 2))
+        if ((step + height_index + height_now - 2) <= battery_max)
             return true;
         else return false;
     }

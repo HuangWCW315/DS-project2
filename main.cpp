@@ -41,7 +41,7 @@ int main()
  
     g.shortest_path(begin, Battery, count, order, file_out1);
 
-    cout << count << endl;
+//    cout << count << endl;
 
     file_out1.seekp(0L, ios::beg);
     file_out1 << count;
@@ -61,7 +61,7 @@ int main()
     }
     end_t = clock();
 
-    cout << (double)(end_t - start_t) / CLOCKS_PER_SEC << endl;
+//    cout << (double)(end_t - start_t) / CLOCKS_PER_SEC << endl;
 
 
     return 0;

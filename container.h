@@ -79,6 +79,7 @@ class stack
         stack():index(-1),capacity(1){
             arr = new node*[capacity];
         }
+        ~stack(){delete [] arr;}
         void push(node *s);
         void pop();
         node *top();

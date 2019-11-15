@@ -110,9 +110,9 @@ graph::~graph()
     {
         for (int j = 0; j < col_max; j++)
             delete map[i][j];
-        delete map[i];
+        delete [] map[i];
     }
-    delete map;
+    delete [] map;
 }
 
 //***********************************************************************************************//

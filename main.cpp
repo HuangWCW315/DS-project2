@@ -59,7 +59,7 @@ int main()
     }
     end_t = clock();
 
-    cout << "Run time : " << (double)(end_t - start_t) / CLOCKS_PER_SEC << " seconds."<< endl;
+ //   cout << "Run time : " << (double)(end_t - start_t) / CLOCKS_PER_SEC << " seconds."<< endl;
 
 
     return 0;

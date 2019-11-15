@@ -156,12 +156,14 @@ node * graph::BFS()
 //**************************************************************************************************************//
 void graph::shortest_path(node *root, const int battery_max, int &counter, node *highest, ofstream& file_out)
 {
-    int element = element_number + 1;
+    int element = element_number;
     stack path;
     queue s1;
     node* index = highest;
     counter--;
     reset_travel();
+    root->travel = true;
+
     while (element > 0)
     {   
         root->print_data(file_out);     // print root

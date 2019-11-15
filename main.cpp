@@ -11,12 +11,12 @@ int main()
     file_out1.open("final.path", ios::out | ios::trunc);
     if (!file_in.is_open())
     {
-        cout << "open file fail!\n";
+        cout << "Open file fail!\n";
         return 0;
     }
     if (!file_out1.is_open())
     {
-        cout << "open file fail!\n";
+        cout << "Open file fail!\n";
         return 0;
     }
     file_in >> row >> col >> Battery;
@@ -24,7 +24,7 @@ int main()
     start_t = clock();
     graph g(row, col, file_in);
 
-    file_out1 << "                 " << '\n';
+    file_out1 << "                      " << '\n';
 
     node *begin;
 
@@ -40,8 +40,6 @@ int main()
     order = g.BFS();        // biggest height
  
     g.shortest_path(begin, Battery, count, order, file_out1);
-
-//    cout << count << endl;
 
     file_out1.seekp(0L, ios::beg);
     file_out1 << count;
@@ -61,7 +59,7 @@ int main()
     }
     end_t = clock();
 
-//    cout << (double)(end_t - start_t) / CLOCKS_PER_SEC << endl;
+    cout << "Run time : " << (double)(end_t - start_t) / CLOCKS_PER_SEC << " seconds."<< endl;
 
 
     return 0;

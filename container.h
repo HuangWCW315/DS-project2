@@ -24,13 +24,12 @@ class node
     bool travel;
     node *parent;
     node *direction[4];
-    node *Left, *Right;
     node *order;
 
     public:
     node(){}
     node(int row, int col, int state):row(row), col(col), height(1), state(state), travel(false), 
-                                        parent(nullptr), Left(nullptr), Right(nullptr)
+                                        parent(nullptr)
                                         {
                                             for (int i = 0; i < 4; i++)
                                             {    
@@ -55,16 +54,15 @@ class graph
     int row_max, col_max;
     int row_begin, col_begin;
     node *root;
-    public:
-    
     int element_number;
     node ***map;
+
+    public:
     graph(int row, int col, ifstream& file);
     ~graph();
     void link(int row, int col);
     void print(int row, int col);
     void reset_travel();
-    void preorder(node *root);
     node *MST();
     void shortest_path(node *root, const int battery_max, int &counter, node *highest,ofstream& file_out);
     node* BFS();

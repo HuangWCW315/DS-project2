@@ -159,7 +159,6 @@ void graph::shortest_path(node *root, const int battery_max, int &counter, node 
     int element = element_number + 1;
     stack path;
     queue s1;
-    stack s2;
     node* index = highest;
     counter--;
     reset_travel();
@@ -196,9 +195,10 @@ void graph::shortest_path(node *root, const int battery_max, int &counter, node 
         node *now = index;
         int step = 0;
 
-        while (can_go)        // travel as far as possible
+        while (now != root)        // travel as far as possible
         {
-            
+            node *further[4] = {nullptr,nullptr,nullptr,nullptr};
+            int k = 0;
             can_go = false;
            if (!now->travel)       // mark
             {
@@ -213,47 +213,43 @@ void graph::shortest_path(node *root, const int battery_max, int &counter, node 
                     node *next = now->direction[i];
                     if (next->check_battery_short(next->height, step + 1, index->height, battery_max))
                     {   
-                        now = next;
-                        s1.push(next);
+                        further[k++] = next;
                         can_go = true;
-                        step++;
                     }
                 }
-
+            }
+            if (can_go)
+            {
+                node *max_height = further[0];
+                while (further[k] != nullptr && further[k]->height >= max_height->height)
+                    max_height = further[k];
+                now = max_height;
+                s1.push(max_height);
+                step++;
+            }
+            else
+            {
+                now = now->parent;
+                s1.push(now);
+                step++;
             }
         }
-
-        while (!s1.empty())            // index to far
-        {
-            s1.front()->print_data(file_out);
-            s1.pop();
-            counter++;
-        }
-    
-
-        while (now != root)      // far to root
-        {
-            s1.push(now);
-            now = now->parent;
-        }
-
-        s1.pop();
-        while (!s1.empty())           // far to root
+        while (!s1.empty())            // index to root
         {
             if (!s1.front()->travel)       // mark
             {
                 element--;
                 s1.front()->travel = true;
             }
-            s1.front()->print_data(file_out);
+            if (s1.front() != root)
+                s1.front()->print_data(file_out);
             s1.pop();
             counter++;
         }
-        
+    
 
-        counter++;
     }
 
         root->print_data(file_out);     // print root
-        counter++;
+        counter++; 
 }

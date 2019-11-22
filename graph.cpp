@@ -15,7 +15,7 @@ graph::graph(int row, int col, ifstream& file)
         col_max = col;
         map = new node**[row];
 
-        char ch[1000];
+        char ch[1001];
         for (int i = 0; i < row; i++)
         {    
             map[i] = new node*[col];
